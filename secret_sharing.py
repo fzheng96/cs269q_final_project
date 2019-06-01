@@ -24,14 +24,12 @@ class SecretSharing:
         self.programs = []
         self.alphas_betas = message
         self.qvm = QVMConnection(random_seed=1337)
-        counter = 0
         for alpha, beta in message:
             if not np.allclose([(alpha ** 2) + (beta ** 2)], [1]):
                 raise Exception('Invalid qubit setup: The alpha and betas ' +
                     'squared should equal 1.')
             p = create_arbitrary_state([alpha, beta])
             self.programs.append(p)
-            counter += 1
 
     def share_secret(self):
         """
@@ -132,9 +130,9 @@ class SecretSharing:
                 if not np.allclose([amplitude], [0]):
                     curr_reconstructed.append(amplitude)
             curr_reconstructed = np.array(curr_reconstructed)
-            curr_reconstructed = np.abs(curr_reconstructed)
+            curr_reconstructed = curr_reconstructed
             curr_alphas_betas = []
-            for amplitude in np.abs(self.alphas_betas[i]):
+            for amplitude in self.alphas_betas[i]:
                 if not np.allclose([amplitude], [0]):
                     curr_alphas_betas.append(amplitude)
 
