@@ -56,9 +56,9 @@ def parse_data(data, s):
             str_data = data.decode('utf-8')
             result = json.loads(str_data)
             s.close()
-            print(result)
+            print("Wavefunction: {}".format(result))
 
-            
+
 
 while True:
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

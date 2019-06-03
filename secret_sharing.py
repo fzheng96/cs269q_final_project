@@ -72,23 +72,23 @@ class SecretSharing:
             if not np.allclose(bell, result):
                 raise Exception("Measurement in Bell basis was tampered with")
 
-            if bell == [0, 1] and ro[2] == 0:
+            if bell == [0, 0] and ro[2] == 0:
                 p += I(reconstruct_idx)
-            elif bell == [0, 1] and ro[2] == 1:
-                p += Z(reconstruct_idx)
-            elif bell == [1, 1] and ro[2] == 0:
-                p += Z(reconstruct_idx)
-            elif bell == [1, 1] and ro[2] == 1:
-                p += I(reconstruct_idx)
-            elif bell == [0, 0] and ro[2] == 0:
-                p += X(reconstruct_idx)
             elif bell == [0, 0] and ro[2] == 1:
                 p += Z(reconstruct_idx)
-                p += X(reconstruct_idx)
-            elif bell == [1, 0] and ro[2] == 0:
+            elif bell == [0, 1] and ro[2] == 0:
                 p += Z(reconstruct_idx)
+            elif bell == [0, 1] and ro[2] == 1:
+                p += I(reconstruct_idx)
+            elif bell == [1, 0] and ro[2] == 0:
                 p += X(reconstruct_idx)
             elif bell == [1, 0] and ro[2] == 1:
+                p += Z(reconstruct_idx)
+                p += X(reconstruct_idx)
+            elif bell == [1, 1] and ro[2] == 0:
+                p += Z(reconstruct_idx)
+                p += X(reconstruct_idx)
+            elif bell == [1, 1] and ro[2] == 1:
                 p += X(reconstruct_idx)
             else:
                 raise Exception('Bell state or bob_or_charlie\'s measurement' +
