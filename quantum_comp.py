@@ -43,6 +43,7 @@ def reconstruct(p, bob_or_charlie, bell, x_measurement):
         bob_or_charlie: The person who Alice told to make the measurement
         result: Alice's result from measuring in the Bell basis
         """
+
         reconstruct_idx = 2
         if bob_or_charlie == 2:
             reconstruct_idx = 3
@@ -87,14 +88,6 @@ def parse_data(data, s, conn):
             p = ghz_state(p)
             ro = p.declare('ro', 'BIT', 3)
         elif data['command'] == 'measure_bell_basis':
-            # change = 1/np.sqrt(2) * np.array([[1,0,0,1],[1,0,0,-1],[0,1,1,0],[0,1,-1,0]])
-            # # Get the Quil definition for the new gate
-            # change_definition = DefGate("CHANGE", change)
-            # # Get the gate constructor
-            # CHANGE = change_definition.get_constructor()
-            # # Then we can use the new gate
-            # p += change_definition
-            # p += CHANGE(0,1)
             p += CNOT(0, 1)
             p += H(0)
             p += MEASURE(0, ro[0])

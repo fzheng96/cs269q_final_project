@@ -9,7 +9,7 @@ from grove.alpha.arbitrary_state.arbitrary_state import create_arbitrary_state
 import sys
 import numpy as np
 
-NUM_TRIALS = 10000
+NUM_TRIALS = 1
 
 class SecretSharing:
 
@@ -49,7 +49,7 @@ class SecretSharing:
                 program += CNOT(q1, q2)
             return program
 
-        def reconstruct(p, bob_or_charlie, result):
+        def reconstruct(p, bob_or_charlie, ro):
             """
             Reconstructs the wave function (alpha betas) by applying the
             appropriate operators determined from two qubits from Alice
@@ -60,45 +60,43 @@ class SecretSharing:
             bob_or_charlie: The person who Alice told to make the measurement
             result: Alice's result from measuring in the Bell basis
             """
-            ro = self.qvm.run(p, trials=NUM_TRIALS)
-            rand_idx = np.random.randint(len(ro))
-            ro = ro[rand_idx]
             reconstruct_idx = 2
             if bob_or_charlie == 2:
                 reconstruct_idx = 3
 
-            bell = [ro[0], ro[1]]
+            bell0 = Program()
+            bell1 = Program()
+            bell00 = Program()
+            bell11 = Program()
+            bell01 = Program()
+            bell10 = Program()
 
-            # This makes sure that the measurement that Bob or Charlie received
-            # from Alice is the same as the measurement that she made by comparing
-            # the result of running p with Alice's result
-            # if not np.allclose(bell, result):
-            #     raise Exception("Measurement in Bell basis was tampered with")
+            bell000 = Program(I(reconstruct_idx))
+            bell001 = Program(Z(reconstruct_idx))
+            bell010 = Program(X(reconstruct_idx))
+            bell011 = Program()
+            bell011 += X(reconstruct_idx)
+            bell011 += Z(reconstruct_idx)
+            bell100 = Program(Z(reconstruct_idx))
+            bell101 = Program(I(reconstruct_idx))
+            bell110 = Program()
+            bell110 += X(reconstruct_idx)
+            bell110 += Z(reconstruct_idx)
+            bell111 = Program(X(reconstruct_idx))
 
-            if bell == [0, 0] and ro[2] == 0:
-                p += I(reconstruct_idx)
-            elif bell == [0, 0] and ro[2] == 1:
-                p += Z(reconstruct_idx)
-            elif bell == [1, 0] and ro[2] == 0:
-                p += Z(reconstruct_idx)
-            elif bell == [1, 0] and ro[2] == 1:
-                p += I(reconstruct_idx)
-            elif bell == [0, 1] and ro[2] == 0:
-                p += X(reconstruct_idx)
-            elif bell == [0, 1] and ro[2] == 1:
-                p += X(reconstruct_idx)
-                p += Z(reconstruct_idx)
-            elif bell == [1, 1] and ro[2] == 0:
-                p += X(reconstruct_idx)
-                p += Z(reconstruct_idx)
-            elif bell == [1, 1] and ro[2] == 1:
-                p += X(reconstruct_idx)
-            else:
-                raise Exception('Bell state or bob_or_charlie\'s measurement' +
-                    'was wrong')
+            bell10.if_then(ro[2], bell101, bell100)
+            bell11.if_then(ro[2], bell111, bell110)
+            bell00.if_then(ro[2], bell001, bell000)
+            bell01.if_then(ro[2], bell011, bell010)
 
+            bell1.if_then(ro[1], bell11, bell10)
+            bell0.if_then(ro[1], bell01, bell00)
+            p.if_then(ro[0], bell1, bell0)
             wavefunction_simulator = WavefunctionSimulator()
             wavefunction = wavefunction_simulator.wavefunction(p)
+
+            print('After Operator')
+            print(wavefunction)
 
             return wavefunction
 
@@ -110,14 +108,6 @@ class SecretSharing:
             # measure in bell basis
             p += CNOT(0, 1)
             p += H(0)
-            # change = 1/np.sqrt(2) * np.array([[1,0,0,1],[1,0,0,-1],[0,1,1,0],[0,1,-1,0]])
-            # # Get the Quil definition for the new gate
-            # change_definition = DefGate("CHANGE", change)
-            # # Get the gate constructor
-            # CHANGE = change_definition.get_constructor()
-            # # Then we can use the new gate
-            # p += change_definition
-            # p += CHANGE(0,1)
 
             p += MEASURE(0, ro[0])
             p += MEASURE(1, ro[1])
@@ -133,7 +123,7 @@ class SecretSharing:
             p += MEASURE(bob_or_charlie, ro[2])
 
             self.programs[i] = p
-            wavefunction = reconstruct(p, bob_or_charlie, result)
+            wavefunction = reconstruct(p, bob_or_charlie, ro)
 
             print("Original alphas_betas: {}".format(self.alphas_betas[i]))
             print("Reconstructed alphas_betas: {}".format(wavefunction))
