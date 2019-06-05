@@ -88,8 +88,16 @@ def parse_data(data, s, conn):
             p += ghz_state()
             ro = p.declare('ro', 'BIT', 3)
         elif data['command'] == 'measure_bell_basis':
-            p += CNOT(1, 0)
-            p += H(1)
+            # change = 1/np.sqrt(2) * np.array([[1,0,0,1],[1,0,0,-1],[0,1,1,0],[0,1,-1,0]])
+            # # Get the Quil definition for the new gate
+            # change_definition = DefGate("CHANGE", change)
+            # # Get the gate constructor
+            # CHANGE = change_definition.get_constructor()
+            # # Then we can use the new gate
+            # p += change_definition
+            # p += CHANGE(0,1)
+            p += CNOT(0, 1)
+            p += H(0)
             p += MEASURE(0, ro[0])
             p += MEASURE(1, ro[1])
             p_copy = p.copy()
