@@ -63,3 +63,5 @@ tell_bob_to_send_to_charlie
 ```
 
 Now, in the Charlie screen, you should see the reconstructed wave function.
+
+To have Bob have the final message, you merely have to switch the last three of the commands above to use charlie's name where bob's is and bob's name where charlie's is.
