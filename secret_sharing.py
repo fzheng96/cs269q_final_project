@@ -152,16 +152,10 @@ class SecretSharing:
                 np.sort(np.abs(np.real(curr_reconstructed)))):
                 raise Exception("Someone is eavesdropping...")
 
-<<<<<<< HEAD
 if __name__ == '__main__':
     qubits = []
     for i in range(1, len(sys.argv)):
         alpha, beta = sys.argv[i].split(',')
         qubits.append((float(alpha), float(beta)))
-    print(qubits)
     ss = SecretSharing(qubits)
     ss.share_secret()
-=======
-ss = SecretSharing([(1/np.sqrt(2), -1/np.sqrt(2))])
-ss.share_secret()
->>>>>>> 3c0601eff330b30054ac064a7eec831edc2ffdcd
