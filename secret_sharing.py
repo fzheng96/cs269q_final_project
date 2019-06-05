@@ -60,7 +60,6 @@ class SecretSharing:
             bob_or_charlie: The person who Alice told to make the measurement
             result: Alice's result from measuring in the Bell basis
             """
-
             ro = self.qvm.run(p, trials=NUM_TRIALS)
             rand_idx = np.random.randint(len(ro))
             ro = ro[rand_idx]
@@ -69,31 +68,30 @@ class SecretSharing:
                 reconstruct_idx = 3
 
             bell = [ro[0], ro[1]]
-            print(bell)
 
             # This makes sure that the measurement that Bob or Charlie received
             # from Alice is the same as the measurement that she made by comparing
             # the result of running p with Alice's result
-            if not np.allclose(bell, result):
-                raise Exception("Measurement in Bell basis was tampered with")
+            # if not np.allclose(bell, result):
+            #     raise Exception("Measurement in Bell basis was tampered with")
 
             if bell == [0, 0] and ro[2] == 0:
                 p += I(reconstruct_idx)
             elif bell == [0, 0] and ro[2] == 1:
                 p += Z(reconstruct_idx)
-            elif bell == [0, 1] and ro[2] == 0:
-                p += Z(reconstruct_idx)
-            elif bell == [0, 1] and ro[2] == 1:
-                p += I(reconstruct_idx)
             elif bell == [1, 0] and ro[2] == 0:
-                p += X(reconstruct_idx)
+                p += Z(reconstruct_idx)
             elif bell == [1, 0] and ro[2] == 1:
+                p += I(reconstruct_idx)
+            elif bell == [0, 1] and ro[2] == 0:
+                p += X(reconstruct_idx)
+            elif bell == [0, 1] and ro[2] == 1:
                 p += X(reconstruct_idx)
                 p += Z(reconstruct_idx)
-            elif bell == [1, 1] and x_measurement == 0:
+            elif bell == [1, 1] and ro[2] == 0:
                 p += X(reconstruct_idx)
                 p += Z(reconstruct_idx)
-            elif bell == [1, 1] and x_measurement == 1:
+            elif bell == [1, 1] and ro[2] == 1:
                 p += X(reconstruct_idx)
             else:
                 raise Exception('Bell state or bob_or_charlie\'s measurement' +
@@ -112,9 +110,6 @@ class SecretSharing:
             # measure in bell basis
             p += CNOT(0, 1)
             p += H(0)
-            wavefunction_simulator = WavefunctionSimulator()
-            wavefunction = wavefunction_simulator.wavefunction(p)
-            print(wavefunction.get_outcome_probs())
             # change = 1/np.sqrt(2) * np.array([[1,0,0,1],[1,0,0,-1],[0,1,1,0],[0,1,-1,0]])
             # # Get the Quil definition for the new gate
             # change_definition = DefGate("CHANGE", change)

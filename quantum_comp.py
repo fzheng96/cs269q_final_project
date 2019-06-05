@@ -51,13 +51,13 @@ def reconstruct(p, bob_or_charlie, bell, x_measurement):
             p += I(reconstruct_idx)
         elif bell == [0, 0] and x_measurement == 1:
             p += Z(reconstruct_idx)
-        elif bell == [0, 1] and x_measurement == 0:
-            p += Z(reconstruct_idx)
-        elif bell == [0, 1] and x_measurement == 1:
-            p += I(reconstruct_idx)
         elif bell == [1, 0] and x_measurement == 0:
-            p += X(reconstruct_idx)
+            p += Z(reconstruct_idx)
         elif bell == [1, 0] and x_measurement == 1:
+            p += I(reconstruct_idx)
+        elif bell == [0, 1] and x_measurement == 0:
+            p += X(reconstruct_idx)
+        elif bell == [0, 1] and x_measurement == 1:
             p += Z(reconstruct_idx)
             p += X(reconstruct_idx)
         elif bell == [1, 1] and x_measurement == 0:
@@ -111,7 +111,9 @@ def parse_data(data, s, conn):
             p += H(2)
             p += MEASURE(2, ro[2])
             p_copy = p.copy()
-            result = qvm.run(p_copy, trials=NUM_TRIALS)[0]
+            result = qvm.run(p_copy, trials=NUM_TRIALS)
+            rand_idx = np.random.randint(len(result))
+            result = str(result[rand_idx])
             print("Result of measuring in x: {}".format(result))
             json_msg = json.dumps(result[2])
             conn.sendall(json_msg.encode(encoding='UTF-8'))
@@ -135,7 +137,9 @@ def parse_data(data, s, conn):
             p += H(3)
             p += MEASURE(3, ro[2])
             p_copy = p.copy()
-            result = qvm.run(p_copy, trials=NUM_TRIALS)[0]
+            result = qvm.run(p_copy, trials=NUM_TRIALS)
+            rand_idx = np.random.randint(len(result))
+            result = str(result[rand_idx])
             print("Result of measuring in x: {}".format(result))
             json_msg = json.dumps(result[2])
             conn.sendall(json_msg.encode(encoding='UTF-8'))
