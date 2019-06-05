@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 from pyquil import Program
 from pyquil.quil import DefGate
 from pyquil.gates import *
@@ -5,6 +6,7 @@ from pyquil.api import WavefunctionSimulator, QVMConnection
 
 from grove.alpha.arbitrary_state.arbitrary_state import create_arbitrary_state
 
+import sys
 import numpy as np
 
 NUM_TRIALS = 10000
@@ -85,10 +87,10 @@ class SecretSharing:
             elif bell == [1, 0] and ro[2] == 1:
                 p += X(reconstruct_idx)
                 p += Z(reconstruct_idx)
-            elif bell == [1, 1] and ro[2] == 0:
+            elif bell == [1, 1] and x_measurement == 0:
                 p += X(reconstruct_idx)
                 p += Z(reconstruct_idx)
-            elif bell == [1, 1] and ro[2] == 1:
+            elif bell == [1, 1] and x_measurement == 1:
                 p += X(reconstruct_idx)
             else:
                 raise Exception('Bell state or bob_or_charlie\'s measurement' +
@@ -149,12 +151,15 @@ class SecretSharing:
 
             # If an eavesdropper has entangled an ancilla qubit into the system,
             # errors will occur
-            if not np.allclose(np.sort(np.real(curr_alphas_betas)),
-                np.sort(np.real(curr_reconstructed))):
+            if not np.allclose(np.sort(np.abs(np.real(curr_alphas_betas))),
+                np.sort(np.abs(np.real(curr_reconstructed)))):
                 raise Exception("Someone is eavesdropping...")
 
-#ss = SecretSharing([(1/np.sqrt(3), -np.sqrt(2)/np.sqrt(3))])
-ss = SecretSharing([(1/np.sqrt(2), -1/np.sqrt(2))])
-#ss = SecretSharing([(0,1)])
-ss.share_secret()
 
+if __name__ == '__main__':
+    qubits = []
+    for i in range(1, len(sys.argv)):
+        alpha, beta = sys.argv[i].split(',')
+        qubits.append((float(alpha), float(beta)))
+    ss = SecretSharing(qubits)
+    ss.share_secret()

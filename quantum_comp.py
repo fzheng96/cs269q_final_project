@@ -47,23 +47,23 @@ def reconstruct(p, bob_or_charlie, bell, x_measurement):
         if bob_or_charlie == 2:
             reconstruct_idx = 3
         bell = ast.literal_eval(bell)
-        if bell == [0, 0] and x_measurement == 1:
+        if bell == [0, 0] and x_measurement == 0:
             p += I(reconstruct_idx)
-        elif bell == [0, 0] and x_measurement == 0:
-            p += Z(reconstruct_idx)
-        elif bell == [0, 1] and x_measurement == 1:
+        elif bell == [0, 0] and x_measurement == 1:
             p += Z(reconstruct_idx)
         elif bell == [0, 1] and x_measurement == 0:
-            p += I(reconstruct_idx)
-        elif bell == [1, 0] and x_measurement == 1:
-            p += X(reconstruct_idx)
-        elif bell == [1, 0] and x_measurement == 0:
             p += Z(reconstruct_idx)
+        elif bell == [0, 1] and x_measurement == 1:
+            p += I(reconstruct_idx)
+        elif bell == [1, 0] and x_measurement == 0:
             p += X(reconstruct_idx)
-        elif bell == [1, 1] and x_measurement == 1:
+        elif bell == [1, 0] and x_measurement == 1:
             p += Z(reconstruct_idx)
             p += X(reconstruct_idx)
         elif bell == [1, 1] and x_measurement == 0:
+            p += Z(reconstruct_idx)
+            p += X(reconstruct_idx)
+        elif bell == [1, 1] and x_measurement == 1:
             p += X(reconstruct_idx)
         else:
             raise Exception('Bell state or bob_or_charlie\'s measurement' +
