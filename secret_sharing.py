@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 from pyquil import Program
 from pyquil.quil import DefGate
 from pyquil.gates import *
@@ -5,6 +6,7 @@ from pyquil.api import WavefunctionSimulator, QVMConnection
 
 from grove.alpha.arbitrary_state.arbitrary_state import create_arbitrary_state
 
+import sys
 import numpy as np
 
 NUM_TRIALS = 1
@@ -138,6 +140,15 @@ class SecretSharing:
 
             # If an eavesdropper has entangled an ancilla qubit into the system,
             # errors will occur
-            if not np.allclose(np.sort(np.real(curr_alphas_betas)),
-                np.sort(np.real(curr_reconstructed))):
+            if not np.allclose(np.sort(np.abs(np.real(curr_alphas_betas))),
+                np.sort(np.abs(np.real(curr_reconstructed)))):
                 raise Exception("Someone is eavesdropping...")
+
+if __name__ == '__main__':
+    qubits = []
+    for i in range(1, len(sys.argv)):
+        alpha, beta = sys.argv[i].split(',')
+        qubits.append((float(alpha), float(beta)))
+    print(qubits)
+    ss = SecretSharing(qubits)
+    ss.share_secret()
