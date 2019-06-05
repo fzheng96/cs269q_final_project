@@ -60,7 +60,10 @@ class SecretSharing:
             bob_or_charlie: The person who Alice told to make the measurement
             result: Alice's result from measuring in the Bell basis
             """
-            ro = self.qvm.run(p, trials=NUM_TRIALS)[0]
+
+            ro = self.qvm.run(p, trials=NUM_TRIALS)
+            rand_idx = np.random.randint(len(ro))
+            ro = ro[rand_idx]
             reconstruct_idx = 2
             if bob_or_charlie == 2:
                 reconstruct_idx = 3
@@ -107,11 +110,11 @@ class SecretSharing:
             ro = p.declare('ro', 'BIT', 3)
 
             # measure in bell basis
+            p += CNOT(0, 1)
+            p += H(0)
             wavefunction_simulator = WavefunctionSimulator()
             wavefunction = wavefunction_simulator.wavefunction(p)
             print(wavefunction.get_outcome_probs())
-            p += CNOT(0, 1)
-            p += H(0)
             # change = 1/np.sqrt(2) * np.array([[1,0,0,1],[1,0,0,-1],[0,1,1,0],[0,1,-1,0]])
             # # Get the Quil definition for the new gate
             # change_definition = DefGate("CHANGE", change)
@@ -125,7 +128,9 @@ class SecretSharing:
             p += MEASURE(1, ro[1])
 
             p_copy = p.copy()
-            result = self.qvm.run(p_copy, trials=NUM_TRIALS)[0]
+            result = self.qvm.run(p_copy, trials=NUM_TRIALS)
+            rand_idx = np.random.randint(len(result))
+            result = result[rand_idx]
 
             # choose bob or charlie to measure
             bob_or_charlie = int(np.random.choice([2, 3]))
