@@ -22,12 +22,11 @@ qvm = QVMConnection(random_seed=1337)
 p = None
 ro = None
 
-def ghz_state(qubits=[1,2,3]):
+def ghz_state(program, qubits=[1,2,3]):
     """
     Create a GHZ state on the given list of qubits by applying a
     Hadamard gate to the first qubit followed by a chain of CNOTs
     """
-    program = Program()
     program += H(qubits[0])
     for q1, q2 in zip(qubits, qubits[1:]):
         program += CNOT(q1, q2)
@@ -84,8 +83,8 @@ def parse_data(data, s, conn):
     if data['name'] == 'alice':
         if data['command'] == 'initialize_sharing_protocol':
             alpha, beta = data['qubit']
-            p = create_arbitrary_state([float(alpha), float(beta)])
-            p += ghz_state()
+            p = create_arbitrary_state([float(alpha), float(beta)], qubits = [0])
+            p = ghz_state(p)
             ro = p.declare('ro', 'BIT', 3)
         elif data['command'] == 'measure_bell_basis':
             # change = 1/np.sqrt(2) * np.array([[1,0,0,1],[1,0,0,-1],[0,1,1,0],[0,1,-1,0]])

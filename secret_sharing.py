@@ -28,7 +28,7 @@ class SecretSharing:
             if not np.allclose([(alpha ** 2) + (beta ** 2)], [1]):
                 raise Exception('Invalid qubit setup: The alpha and betas ' +
                     'squared should equal 1.')
-            p = create_arbitrary_state([alpha, beta])
+            p = create_arbitrary_state([alpha, beta], qubits = [0])
             self.programs.append(p)
 
     def share_secret(self):
@@ -37,12 +37,11 @@ class SecretSharing:
         that Bob and Charlie have to work together to retrieve the original
         message that was to be sent
         """
-        def ghz_state(qubits=[1,2,3]):
+        def ghz_state(program, qubits=[1,2,3]):
             """
             Create a GHZ state on the given list of qubits by applying a
             Hadamard gate to the first qubit followed by a chain of CNOTs
             """
-            program = Program()
             program += H(qubits[0])
             for q1, q2 in zip(qubits, qubits[1:]):
                 program += CNOT(q1, q2)
@@ -65,6 +64,7 @@ class SecretSharing:
                 reconstruct_idx = 3
 
             bell = [ro[0], ro[1]]
+            print(bell)
 
             # This makes sure that the measurement that Bob or Charlie received
             # from Alice is the same as the measurement that she made by comparing
@@ -72,23 +72,23 @@ class SecretSharing:
             if not np.allclose(bell, result):
                 raise Exception("Measurement in Bell basis was tampered with")
 
-            if bell == [0, 1] and ro[2] == 0:
+            if bell == [0, 0] and ro[2] == 0:
                 p += I(reconstruct_idx)
-            elif bell == [0, 1] and ro[2] == 1:
-                p += Z(reconstruct_idx)
-            elif bell == [1, 1] and ro[2] == 0:
-                p += Z(reconstruct_idx)
-            elif bell == [1, 1] and ro[2] == 1:
-                p += I(reconstruct_idx)
-            elif bell == [0, 0] and ro[2] == 0:
-                p += X(reconstruct_idx)
             elif bell == [0, 0] and ro[2] == 1:
-                p += X(reconstruct_idx)
                 p += Z(reconstruct_idx)
+            elif bell == [0, 1] and ro[2] == 0:
+                p += Z(reconstruct_idx)
+            elif bell == [0, 1] and ro[2] == 1:
+                p += I(reconstruct_idx)
             elif bell == [1, 0] and ro[2] == 0:
                 p += X(reconstruct_idx)
-                p += Z(reconstruct_idx)
             elif bell == [1, 0] and ro[2] == 1:
+                p += X(reconstruct_idx)
+                p += Z(reconstruct_idx)
+            elif bell == [1, 1] and ro[2] == 0:
+                p += X(reconstruct_idx)
+                p += Z(reconstruct_idx)
+            elif bell == [1, 1] and ro[2] == 1:
                 p += X(reconstruct_idx)
             else:
                 raise Exception('Bell state or bob_or_charlie\'s measurement' +
@@ -101,10 +101,13 @@ class SecretSharing:
 
 
         for i, p in enumerate(self.programs):
-            p += ghz_state()
+            p = ghz_state(p)
             ro = p.declare('ro', 'BIT', 3)
 
             # measure in bell basis
+            wavefunction_simulator = WavefunctionSimulator()
+            wavefunction = wavefunction_simulator.wavefunction(p)
+            print(wavefunction.get_outcome_probs())
             p += CNOT(0, 1)
             p += H(0)
             # change = 1/np.sqrt(2) * np.array([[1,0,0,1],[1,0,0,-1],[0,1,1,0],[0,1,-1,0]])
@@ -150,5 +153,8 @@ class SecretSharing:
                 np.sort(np.real(curr_reconstructed))):
                 raise Exception("Someone is eavesdropping...")
 
+#ss = SecretSharing([(1/np.sqrt(3), -np.sqrt(2)/np.sqrt(3))])
 ss = SecretSharing([(1/np.sqrt(2), -1/np.sqrt(2))])
+#ss = SecretSharing([(0,1)])
 ss.share_secret()
+
