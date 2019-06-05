@@ -1,10 +1,8 @@
-#
-CS269Q Final Project: Quantum Secret Sharing
+# CS269Q Final Project: Quantum Secret Sharing
 
 This project holds the code for our implemenation of Quantum Secret Sharing. The project has two implementations of quantum secret sharing: a local version in which Alice, Bob, and Charlie manipulate the qubits on the same machine, and a version that relies on a classic network in which Alice, Bob, Charlie, and the quantum machine all live on different servers and share quantum secrets over the network.
 
-##
-Local Version:
+## Local Version:
 
 To run the local version of the code, you first must run
 
@@ -19,8 +17,7 @@ Now, you can simply run
 
 Here, we are assuming that Alice only has two qubits to send. If she has more, she can keep appending to the command.
 
-##
-Network Version:
+## Network Version:
 
 First, you must run
 
