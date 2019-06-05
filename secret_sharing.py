@@ -9,7 +9,7 @@ from grove.alpha.arbitrary_state.arbitrary_state import create_arbitrary_state
 import sys
 import numpy as np
 
-NUM_TRIALS = 1
+NUM_TRIALS = 10000
 
 class SecretSharing:
 
@@ -74,23 +74,23 @@ class SecretSharing:
             if not np.allclose(bell, result):
                 raise Exception("Measurement in Bell basis was tampered with")
 
-            if bell == [0, 0] and ro[2] == 0:
+            if bell == [0, 0] and x_measurement == 1:
                 p += I(reconstruct_idx)
-            elif bell == [0, 0] and ro[2] == 1:
+            elif bell == [0, 0] and x_measurement == 0:
                 p += Z(reconstruct_idx)
-            elif bell == [0, 1] and ro[2] == 0:
+            elif bell == [0, 1] and x_measurement == 1:
                 p += Z(reconstruct_idx)
-            elif bell == [0, 1] and ro[2] == 1:
+            elif bell == [0, 1] and x_measurement == 0:
                 p += I(reconstruct_idx)
-            elif bell == [1, 0] and ro[2] == 0:
+            elif bell == [1, 0] and x_measurement == 1:
                 p += X(reconstruct_idx)
-            elif bell == [1, 0] and ro[2] == 1:
+            elif bell == [1, 0] and x_measurement == 0:
                 p += Z(reconstruct_idx)
                 p += X(reconstruct_idx)
-            elif bell == [1, 1] and ro[2] == 0:
+            elif bell == [1, 1] and x_measurement == 1:
                 p += Z(reconstruct_idx)
                 p += X(reconstruct_idx)
-            elif bell == [1, 1] and ro[2] == 1:
+            elif bell == [1, 1] and x_measurement == 0:
                 p += X(reconstruct_idx)
             else:
                 raise Exception('Bell state or bob_or_charlie\'s measurement' +
@@ -107,8 +107,16 @@ class SecretSharing:
             ro = p.declare('ro', 'BIT', 3)
 
             # measure in bell basis
-            p += CNOT(1, 0)
-            p += H(1)
+            p += CNOT(0, 1)
+            p += H(0)
+            # change = 1/np.sqrt(2) * np.array([[1,0,0,1],[1,0,0,-1],[0,1,1,0],[0,1,-1,0]])
+            # # Get the Quil definition for the new gate
+            # change_definition = DefGate("CHANGE", change)
+            # # Get the gate constructor
+            # CHANGE = change_definition.get_constructor()
+            # # Then we can use the new gate
+            # p += change_definition
+            # p += CHANGE(0,1)
 
             p += MEASURE(0, ro[0])
             p += MEASURE(1, ro[1])
@@ -144,6 +152,7 @@ class SecretSharing:
                 np.sort(np.abs(np.real(curr_reconstructed)))):
                 raise Exception("Someone is eavesdropping...")
 
+<<<<<<< HEAD
 if __name__ == '__main__':
     qubits = []
     for i in range(1, len(sys.argv)):
@@ -152,3 +161,7 @@ if __name__ == '__main__':
     print(qubits)
     ss = SecretSharing(qubits)
     ss.share_secret()
+=======
+ss = SecretSharing([(1/np.sqrt(2), -1/np.sqrt(2))])
+ss.share_secret()
+>>>>>>> 3c0601eff330b30054ac064a7eec831edc2ffdcd
