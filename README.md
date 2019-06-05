@@ -19,6 +19,8 @@ Here, we are assuming that Alice only has two qubits to send. If she has more, s
 
 ## Network Version:
 
+![Diagram](diagram.png)
+
 First, you must run
 
 ```
