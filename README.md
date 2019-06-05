@@ -17,6 +17,15 @@ Now, you can simply run
 
 Here, we are assuming that Alice only has two qubits to send. If she has more, she can keep appending to the command.
 
+In addition, you can easily use the SecretSharing class after importing in your own project, and you can use the class simply by doing
+
+```
+ss = SecretSharing(<args>)
+ss.share_secret()
+```
+
+In this case, args is a parameter of list of tuples of this sort: [(alpha_1,beta_1), (alpha_2,beta_2), etc.]
+
 ## Network Version:
 
 ![Diagram](diagram.png)
